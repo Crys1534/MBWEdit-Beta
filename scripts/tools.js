@@ -287,25 +287,26 @@ function getPreviewBlock(event) {
     };
 }
 
-// Eventos de ratón para trazar la selección
-const pCanvas = document.getElementById("preview-canvas");
-if(pCanvas) {
-    pCanvas.addEventListener("mousedown", (e) => {
+// Eventos de ratón robustos para trazar la selección
+document.addEventListener("mousedown", (e) => {
+    if (e.target.id === "preview-canvas") {
         advScreenshot.isDragging = true;
         advScreenshot.startBlock = getPreviewBlock(e);
         advScreenshot.endBlock = advScreenshot.startBlock;
         drawPreview();
-    });
-    pCanvas.addEventListener("mousemove", (e) => {
-        if (advScreenshot.isDragging) {
-            advScreenshot.endBlock = getPreviewBlock(e);
-            drawPreview();
-        }
-    });
-    window.addEventListener("mouseup", () => {
-        advScreenshot.isDragging = false;
-    });
-}
+    }
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (advScreenshot.isDragging && e.target.id === "preview-canvas") {
+        advScreenshot.endBlock = getPreviewBlock(e);
+        drawPreview();
+    }
+});
+
+window.addEventListener("mouseup", () => {
+    advScreenshot.isDragging = false;
+});
 
 // Generador de la imagen final en alta resolución
 function downloadAdvancedScreenshot() {
