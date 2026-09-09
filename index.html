@@ -18,7 +18,8 @@
  </select>
  <input type="file" id="file-input" accept=".mbw">
  <button onclick="fileManager.export()">Export</button>
- <button onclick="takeScreenshot()">Tomar Captura</button><br>
+ <button onclick="takeScreenshot()">Tomar Captura</button>
+ <button onclick="openAdvancedScreenshot()">Captura Avanzada</button><br>
  <label>Gamemode:</label>
  <select id="gamemode">
   <option value="0">Survival</option>
@@ -88,6 +89,21 @@
  <script src="scripts/rendering.js"></script>
  <script src="main.js"></script>
  <script src="scripts/tools.js"></script>
+ 
+ 
+ <!-- Ventana Modal de Captura Avanzada -->
+ <div id="screenshot-modal">
+  <div class="modal-content">
+   <h3>Selecciona un área para capturar</h3>
+   <p>Haz clic y arrastra sobre el minimapa para seleccionar los bloques.</p>
+   <canvas id="preview-canvas"></canvas><br>
+   <div class="modal-buttons">
+    <button onclick="closeAdvancedScreenshot()">Cancelar</button>
+    <button onclick="downloadAdvancedScreenshot()">Descargar Selección</button>
+   </div>
+  </div>
+ </div>
+ 
 </body>
 
 </html>
