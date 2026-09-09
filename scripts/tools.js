@@ -165,34 +165,6 @@ const shapes = [
  ],
 ]
 
-// Pega la función aquí, al final del archivo:
-function takeScreenshot() {
-    // 1. Ocultar la UI
-    isTakingScreenshot = true;
-
-    // 2. Forzar un renderizado sin la UI inmediatamente
-    drawBackgrond();
-    drawWorld();
-
-    // 3. Tomar la captura del canvas limpio
-    const canvas = document.getElementById("canvas");
-    const dataURL = canvas.toDataURL("image/png");
-
-    // 4. Iniciar la descarga
-    const downloadLink = document.createElement("a");
-    const date = new Date();
-    const timestamp = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}_${date.getHours()}${date.getMinutes()}`;
-    downloadLink.download = `MB_Screenshot_Clean_${timestamp}.png`;
-    downloadLink.href = dataURL;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-
-    // 5. Devolver la UI para el siguiente fotograma del juego
-    isTakingScreenshot = false;
-}
-
-
 // ==========================================
 // HERRAMIENTA DE CAPTURA AVANZADA (MINIMAPA)
 // ==========================================
@@ -308,22 +280,29 @@ window.addEventListener("mouseup", () => {
     advScreenshot.isDragging = false;
 });
 
-// Generador de la imagen final en alta resolución
-function downloadAdvancedScreenshot() {
-    if (!advScreenshot.startBlock || !advScreenshot.endBlock) {
-        alert("¡Primero haz clic y arrastra en el mapa para seleccionar un área!");
-        return;
+// Generador de la imagen final
+function downloadScreenshot() {
+    let minX, maxX, minY, maxY;
+
+    // ¿El usuario trazó un cuadro verde?
+    if (advScreenshot.startBlock && advScreenshot.endBlock) {
+        // Sí: Usar el área seleccionada
+        minX = Math.min(advScreenshot.startBlock.x, advScreenshot.endBlock.x);
+        maxX = Math.max(advScreenshot.startBlock.x, advScreenshot.endBlock.x);
+        minY = Math.min(advScreenshot.startBlock.y, advScreenshot.endBlock.y);
+        maxY = Math.max(advScreenshot.startBlock.y, advScreenshot.endBlock.y);
+    } else {
+        // No: Exportar automáticamente lo que ve la cámara (como la captura rápida original)
+        minX = camera.x;
+        maxX = camera.x + grid.width - 1;
+        minY = camera.y;
+        maxY = camera.y + grid.height - 1;
     }
-    
-    const minX = Math.min(advScreenshot.startBlock.x, advScreenshot.endBlock.x);
-    const maxX = Math.max(advScreenshot.startBlock.x, advScreenshot.endBlock.x);
-    const minY = Math.min(advScreenshot.startBlock.y, advScreenshot.endBlock.y);
-    const maxY = Math.max(advScreenshot.startBlock.y, advScreenshot.endBlock.y);
     
     const blocksWidth = maxX - minX + 1;
     const blocksHeight = maxY - minY + 1;
     
-    // Canvas invisible para máxima resolución (16px por bloque)
+    // Canvas temporal para alta resolución sin UI
     const tempCanvas = document.createElement("canvas");
     tempCanvas.width = blocksWidth * 16;
     tempCanvas.height = blocksHeight * 16;

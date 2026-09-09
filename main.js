@@ -1,6 +1,8 @@
 const canvas = document.getElementById("canvas");
-canvas.width = 1360;
-canvas.height = 680;
+
+// Ajustamos el tamaño considerando la sidebar y el ribbon superior
+canvas.width = window.innerWidth - 40; 
+canvas.height = window.innerHeight - 150; 
 
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
@@ -13,20 +15,26 @@ const images = {
  ]
 }
 
+let loadedImages = 0;
 images.names.forEach((name) => {
  images[name] = new Image;
+ images[name].onload = () => {
+  loadedImages++;
+  // Renderizar la hotbar HTML una vez que las imágenes carguen
+  if (loadedImages === images.names.length && typeof renderHtmlHotbar === "function") {
+   renderHtmlHotbar();
+  }
+ };
  images[name].src = `assets/${name}.png`;
 });
 
+let tileSize = 16;
 const grid = {
- width: 85,
- height: 42.5,
+ width: Math.floor(canvas.width / tileSize),
+ height: Math.floor(canvas.height / tileSize)
 }
 
-let tileSize = canvas.width / grid.width;
-
 const camera = { x: 0, y: 148, speed: 1 }
-let isTakingScreenshot = false; // Añade esta variable
 
 function initializeWorldCache() {
  window.worldCache = [];
@@ -106,19 +114,22 @@ function drawUI() {
  );
 }
 
+let lastSlotIndex = -1;
+
 function mainLoop() {
  mouse.calculateCoordinates();
  cameraMovement();
  mineAndPlace();
  drawBackgrond();
  drawWorld();
+ drawUI(); // Restaurado para evitar colapsos gráficos
  
- // Modificación: Solo dibujar la interfaz si no estamos tomando captura
- if (!isTakingScreenshot) {
-  drawUI();
-  drawHotbar();
+ // Sincronizar el teclado con la nueva Hotbar HTML
+ if (lastSlotIndex !== slotIndex) {
+  if (typeof renderHtmlHotbar === "function") renderHtmlHotbar();
+  lastSlotIndex = slotIndex;
  }
- 
+
  requestAnimationFrame(mainLoop);
 }
 
