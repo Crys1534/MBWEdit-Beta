@@ -167,16 +167,27 @@ const shapes = [
 
 // Pega la función aquí, al final del archivo:
 function takeScreenshot() {
+    // 1. Ocultar la UI
+    isTakingScreenshot = true;
+
+    // 2. Forzar un renderizado sin la UI inmediatamente
+    drawBackgrond();
+    drawWorld();
+
+    // 3. Tomar la captura del canvas limpio
     const canvas = document.getElementById("canvas");
     const dataURL = canvas.toDataURL("image/png");
+
+    // 4. Iniciar la descarga
     const downloadLink = document.createElement("a");
-    
     const date = new Date();
     const timestamp = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}_${date.getHours()}${date.getMinutes()}`;
-    downloadLink.download = `MB_Screenshot_${timestamp}.png`;
-    
+    downloadLink.download = `MB_Screenshot_Clean_${timestamp}.png`;
     downloadLink.href = dataURL;
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
+
+    // 5. Devolver la UI para el siguiente fotograma del juego
+    isTakingScreenshot = false;
 }

@@ -26,6 +26,7 @@ const grid = {
 let tileSize = canvas.width / grid.width;
 
 const camera = { x: 0, y: 148, speed: 1 }
+let isTakingScreenshot = false; // Añade esta variable
 
 function initializeWorldCache() {
  window.worldCache = [];
@@ -111,8 +112,13 @@ function mainLoop() {
  mineAndPlace();
  drawBackgrond();
  drawWorld();
- drawUI();
- drawHotbar();
+ 
+ // Modificación: Solo dibujar la interfaz si no estamos tomando captura
+ if (!isTakingScreenshot) {
+  drawUI();
+  drawHotbar();
+ }
+ 
  requestAnimationFrame(mainLoop);
 }
 
