@@ -359,3 +359,23 @@ function downloadAdvancedScreenshot() {
     
     closeAdvancedScreenshot();
 }
+
+// Movimiento del minimapa con WASD
+document.addEventListener("keydown", (e) => {
+    const modal = document.getElementById("screenshot-modal");
+    
+    // Solo registrar el movimiento si la ventana avanzada está abierta
+    if (modal && modal.style.display === "flex") {
+        const panSpeed = 10; // Cantidad de bloques que se mueve por cada pulsación
+        
+        if (e.code === "KeyW") advScreenshot.offsetY += panSpeed;
+        if (e.code === "KeyS") advScreenshot.offsetY -= panSpeed;
+        if (e.code === "KeyA") advScreenshot.offsetX -= panSpeed;
+        if (e.code === "KeyD") advScreenshot.offsetX += panSpeed;
+        
+        // Redibujar el minimapa para mostrar el desplazamiento
+        if (["KeyW", "KeyS", "KeyA", "KeyD"].includes(e.code)) {
+            drawPreview();
+        }
+    }
+});
