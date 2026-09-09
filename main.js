@@ -1,6 +1,6 @@
 const canvas = document.getElementById("canvas");
-canvas.width = 1360;
-canvas.height = 680;
+canvas.width = 960;
+canvas.height = 480;
 
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
@@ -19,8 +19,8 @@ images.names.forEach((name) => {
 });
 
 const grid = {
- width: 85,
- height: 42.5,
+ width: 60,
+ height: 30
 }
 
 let tileSize = canvas.width / grid.width;
