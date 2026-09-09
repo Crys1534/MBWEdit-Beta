@@ -1,194 +1,109 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
-    <title>mbwedit</title>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="icon" href="favicon.ico" type="image/x-icon">
+ <link rel="stylesheet" href="style.css">
+ <title>mbwedit</title>
 </head>
+
 <body>
-<div class="app-container">
-    <!-- BARRA SUPERIOR -->
-    <div class="top-bar">
-        <img src="favicon.ico" class="app-icon" alt="MBW" onerror="this.style.display='none'">
-        <div class="top-button">File</div>
-        <label class="top-button icon-btn" title="Abrir .mbw">
-            📂 <input type="file" id="file-input" accept=".mbw" style="display: none;" onclick="this.value = null;">
-        </label>
-        <button class="top-button icon-btn" onclick="fileManager.export()" title="Exportar">💾</button>
-    </div>
-
-    <!-- PESTAÑAS (TABS) -->
-    <div class="ribbon-tabs">
-        <div class="tab active" onclick="switchTab('insert', this)">Insert</div>
-        <div class="tab" onclick="switchTab('world', this)">World Settings</div>
-        <div class="tab" onclick="switchTab('create', this)">Create</div>
-        <div class="tab" onclick="switchTab('view', this)">View</div>
-    </div>
-
-    <!-- CONTENIDO DE LAS PESTAÑAS -->
-    <div class="ribbon-content">
-        <!-- Pestaña Insert -->
-        <div id="tab-insert" class="ribbon-panel active">
-            <div class="ribbon-group">
-                <div id="html-hotbar" class="html-hotbar">
-                    <!-- Los slots se generarán aquí con JS -->
-                </div>
-                <div class="group-label">Inventory (E)</div>
-            </div>
-            <div class="ribbon-group">
-                <button class="ribbon-btn" onclick="openInventory()">📦<br>All Blocks</button>
-                <div class="group-label">Libraries</div>
-            </div>
-        </div>
-
-<!-- Pestaña World Settings -->
-        <div id="tab-world" class="ribbon-panel">
-            <div class="ribbon-group">
-                <select id="dimension" class="ribbon-select">
-                    <option value="1">Overworld</option>
-                    <option value="2">Nether</option>
-                    <option value="3">End</option>
-                </select>
-                <div class="group-label">Dimension</div>
-            </div>
-            <div class="ribbon-group">
-                <div class="ribbon-row">
-                    <label>Gamemode:</label>
-                    <select id="gamemode" class="ribbon-select">
-                        <option value="0">Survival</option>
-                        <option value="1">Creative</option>
-                        <option value="2">Adventure</option>
-                        <option value="3">Spectator</option>
-                    </select>
-                </div>
-                <div class="ribbon-row">
-                    <label><input type="checkbox" id="cheats"> Cheats</label>
-                    <label style="margin-left: 10px;"><input type="checkbox" id="hardcore"> Hardcore</label>
-                </div>
-                <div class="group-label">Game Rules</div>
-            </div>
-            <!-- NUEVO BOTÓN DE LOGROS -->
-            <div class="ribbon-group">
-                <button class="ribbon-btn" onclick="openAchievements()">🏆<br>Manage Achievs.</button>
-                <div class="group-label">Achievements</div>
-            </div>
-        </div>
-
-        <!-- Pestañas Create y View -->
-        <div id="tab-create" class="ribbon-panel"></div>
-        <div id="tab-view" class="ribbon-panel">
-            <div class="ribbon-group">
-                <button class="ribbon-btn" onclick="openAdvancedScreenshot()">📸<br>Screenshot</button>
-                <div class="group-label">Export</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ESPACIO DE TRABAJO -->
-    <div class="workspace">
-        <div class="canvas-container">
-            <canvas id="canvas"></canvas>
-        </div>
-            </div>
-</div>
-
-<!-- Ventana Modal de Captura Avanzada -->
-<div id="screenshot-modal">
-    <div class="modal-content">
-        <h3>Herramienta de Captura</h3>
-        <p>Haz clic y arrastra para seleccionar un área, o descarga la vista actual.</p>
-        <canvas id="preview-canvas"></canvas><br>
-        <div class="modal-buttons">
-            <button onclick="closeAdvancedScreenshot()">Cancelar</button>
-            <button onclick="downloadScreenshot()">Descargar Selección / Vista</button>
-        </div>
-    </div>
-</div>
-
-<!-- Ventana Modal de Inventario -->
-<div id="inventory-modal">
-    <div class="inventory-content">
-        <h3>Inventario de Bloques</h3>
-        <div id="inventory-grid"></div>
-        <div class="modal-buttons">
-            <button onclick="closeInventory()">Cerrar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Ventana Modal de Logros -->
-<div id="achievements-modal">
-    <div class="achiev-window">
-        <div class="achiev-titlebar">
-            <span><b>Achievements</b></span>
-            <span class="achiev-close" onclick="closeAchievements()">✖</span>
-        </div>
-        <div class="achiev-top-buttons">
-            <button onclick="toggleAchievements(true)">UNLOCK ALL</button>
-            <button onclick="toggleAchievements(false)">RESET ALL</button>
-        </div>
-        <div class="achiev-grid" id="achievements">
-            <label><input type="checkbox"> Mine a block of wood</label>
-            <label><input type="checkbox"> Place a block</label>
-            <label><input type="checkbox"> Open the inventory</label>
-            <label><input type="checkbox"> Craft a crafting table</label>
-            <label><input type="checkbox"> Craft a wooden pickaxe</label>
-            <label><input type="checkbox"> Craft a stone pickaxe</label>
-            <label><input type="checkbox"> Craft an iron pickaxe</label>
-            <label><input type="checkbox"> Make a furnace</label>
-            <label><input type="checkbox"> Make an iron ingot</label>
-            <label><input type="checkbox"> Make some torches</label>
-            <label><input type="checkbox"> Grow a tree</label>
-            <label><input type="checkbox"> Tame a dog</label>
-            <label><input type="checkbox"> Slay a pig</label>
-            <label><input type="checkbox"> Slay a cow</label>
-            <label><input type="checkbox"> Slay a sheep</label>
-            <label><input type="checkbox"> Slay a zombie</label>
-            <label><input type="checkbox"> Slay a skeleton</label>
-            <label><input type="checkbox"> Slay a spider</label>
-            <label><input type="checkbox"> Slay a nethereye</label>
-            <label><input type="checkbox"> Slay a blaze</label>
-            <label><input type="checkbox"> Slay an enderman</label>
-            <label><input type="checkbox"> Slay a creeper</label>
-            <label><input type="checkbox"> Defeat a flaming chicken</label>
-            <label><input type="checkbox"> Grow a farm</label>
-            <label><input type="checkbox"> Make a cake</label>
-            <label><input type="checkbox"> Eat some food</label>
-            <label><input type="checkbox"> Use a bed</label>
-            <label><input type="checkbox"> Mine obsidian</label>
-            <label><input type="checkbox"> Mine gold</label>
-            <label><input type="checkbox"> Mine diamonds</label>
-            <label><input type="checkbox"> Make portal stone</label>
-            <label><input type="checkbox"> Travel to the nether</label>
-            <label><input type="checkbox"> Open a door with wiring</label>
-            <label><input type="checkbox"> Fire a bow</label>
-            <label><input type="checkbox"> Teleport with enderpearl</label>
-            <label><input type="checkbox"> Unlock the ender portal</label>
-            <label><input type="checkbox"> Slay the ender dragon</label>
-            <label><input type="checkbox"> Slay a slime</label>
-            <label><input type="checkbox"> Slay a magma cube</label>
-            <label><input type="checkbox"> Fish a fish</label>
-            <label><input type="checkbox"> Use an anvil</label>
-            <label><input type="checkbox"> Slay a zombie pigman</label>
-            <label><input type="checkbox"> Slay a ghast by its fireball</label>
-            <label><input type="checkbox"> Brew a potion</label>
-            <label><input type="checkbox"> Breed two animals</label>
-            <label><input type="checkbox"> Enchant an item</label>
-        </div>
-    </div>
-</div>
-
-<!-- SCRIPTS -->
-<script src="scripts/ui-handler.js"></script>
-<script src="scripts/mbwom.js"></script>
-<script src="scripts/mbw-algorithm.js"></script>
-<script src="scripts/input.js"></script>
-<script src="scripts/file-manager.js"></script>
-<script src="scripts/textures.js"></script>
-<script src="scripts/rendering.js"></script>
-<script src="main.js"></script>
-<script src="scripts/tools.js"></script>
+ <canvas id="canvas"></canvas><br>
+ <select id="dimension">
+  <option value="1">Overworld</option>
+  <option value="2">Nether</option>
+  <option value="3">End</option>
+ </select>
+ <input type="file" id="file-input" accept=".mbw">
+ <button onclick="fileManager.export()">Export</button>
+ <button onclick="takeScreenshot()">Tomar Captura</button>
+ <button onclick="openAdvancedScreenshot()">Captura Avanzada</button><br>
+ <label>Gamemode:</label>
+ <select id="gamemode">
+  <option value="0">Survival</option>
+  <option value="1">Creative</option>
+  <option value="2">Adventure</option>
+  <option value="3">Spectator</option>
+ </select><br>
+ <label>Cheats<input type="checkbox" id="cheats"></label><br>
+ <label>Hardcore<input type="checkbox" id="hardcore"></label>
+ <div id="achievements">
+  <h2>Achievements</h2>
+  <label><input type="checkbox"> Mine a block of wood</label><br>
+  <label><input type="checkbox"> Place a block</label><br>
+  <label><input type="checkbox"> Open the inventory</label><br>
+  <label><input type="checkbox"> Craft a crafting table</label><br>
+  <label><input type="checkbox"> Craft a wooden pickaxe</label><br>
+  <label><input type="checkbox"> Craft a stone pickaxe</label><br>
+  <label><input type="checkbox"> Craft an iron pickaxe</label><br>
+  <label><input type="checkbox"> Make a furnace</label><br>
+  <label><input type="checkbox"> Make an iron ingot</label><br>
+  <label><input type="checkbox"> Make some torches</label><br>
+  <label><input type="checkbox"> Grow a tree</label><br>
+  <label><input type="checkbox"> Tame a dog</label><br>
+  <label><input type="checkbox"> Slay a pig</label><br>
+  <label><input type="checkbox"> Slay a cow</label><br>
+  <label><input type="checkbox"> Slay a sheep</label><br>
+  <label><input type="checkbox"> Slay a zombie</label><br>
+  <label><input type="checkbox"> Slay a skeleton</label><br>
+  <label><input type="checkbox"> Slay a spider</label><br>
+  <label><input type="checkbox"> Slay a nethereye</label><br>
+  <label><input type="checkbox"> Slay a blaze</label><br>
+  <label><input type="checkbox"> Slay an enderman</label><br>
+  <label><input type="checkbox"> Slay a creeper</label><br>
+  <label><input type="checkbox"> Defeat a flaming chicken</label><br>
+  <label><input type="checkbox"> Grow a farm</label><br>
+  <label><input type="checkbox"> Make a cake</label><br>
+  <label><input type="checkbox"> Eat some food</label><br>
+  <label><input type="checkbox"> Use a bed</label><br>
+  <label><input type="checkbox"> Mine obsidian</label><br>
+  <label><input type="checkbox"> Mine gold</label><br>
+  <label><input type="checkbox"> Mine diamonds</label><br>
+  <label><input type="checkbox"> Make portal stone</label><br>
+  <label><input type="checkbox"> Travel to the nether</label><br>
+  <label><input type="checkbox"> Open a door with wiring</label><br>
+  <label><input type="checkbox"> Fire a bow</label><br>
+  <label><input type="checkbox"> Teleport with enderpearl</label><br>
+  <label><input type="checkbox"> Unlock the ender portal</label><br>
+  <label><input type="checkbox"> Slay the ender dragon</label><br>
+  <label><input type="checkbox"> Slay a slime</label><br>
+  <label><input type="checkbox"> Slay a magma cube</label><br>
+  <label><input type="checkbox"> Fish a fish</label><br>
+  <label><input type="checkbox"> Use an anvil</label><br>
+  <label><input type="checkbox"> Slay a zombie pigman</label><br>
+  <label><input type="checkbox"> Slay a ghast by its fireball</label><br>
+  <label><input type="checkbox"> Brew a potion</label><br>
+  <label><input type="checkbox"> Breed two animals</label><br>
+  <label><input type="checkbox"> Enchant an item</label><br>
+  <button onclick="toggleAchievements(true)">Unlock All</button>
+  <button onclick="toggleAchievements(false)">Reset All</button>
+ </div>
+ <script src="scripts/ui-handler.js"></script>
+ <script src="scripts/mbwom.js"></script>
+ <script src="scripts/mbw-algorithm.js"></script>
+ <script src="scripts/input.js"></script>
+ <script src="scripts/file-manager.js"></script>
+ <script src="scripts/textures.js"></script>
+ <script src="scripts/rendering.js"></script>
+ <script src="main.js"></script>
+ <script src="scripts/tools.js"></script>
+ 
+ 
+ <!-- Ventana Modal de Captura Avanzada -->
+ <div id="screenshot-modal">
+  <div class="modal-content">
+   <h3>Selecciona un área para capturar</h3>
+   <p>Haz clic y arrastra sobre el minimapa para seleccionar los bloques.</p>
+   <canvas id="preview-canvas"></canvas><br>
+   <div class="modal-buttons">
+    <button onclick="closeAdvancedScreenshot()">Cancelar</button>
+    <button onclick="downloadAdvancedScreenshot()">Descargar Selección</button>
+   </div>
+  </div>
+ </div>
+ 
 </body>
+
 </html>
